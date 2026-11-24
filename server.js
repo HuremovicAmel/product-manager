@@ -76,6 +76,39 @@ app.post("/api/products", (req, res) => {
 });
 
 
+// DELETE - Delete a product
+
+app.delete("/api/products/:id", (req, res) => {
+
+    const id = Number(req.params.id);
+
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        return res.status(400).json({
+            message: "Ogiltigt produkt-ID."
+        });
+    }
+
+    const sql = "DELETE FROM products WHERE id = ?";
+
+    db.run(sql, [id], function (error) {
+
+        if (error) {
+            return res.status(500).json({
+                message: "Kunde inte ta bort produkten."
+            });
+        }
+
+        if (this.changes === 0) {
+            return res.status(404).json({
+                message: "Produkten hittades inte."
+            });
+        }
+
+        res.status(204).end();
+    });
+});
+
+
 // Start server
 
 app.listen(PORT, () => {
