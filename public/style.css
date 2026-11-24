@@ -1,4 +1,6 @@
-/* Global styles */
+/* ==============================
+   Global styles
+================================ */
 
 * {
     margin: 0;
@@ -14,7 +16,9 @@ body {
 }
 
 
-/* Header */
+/* ==============================
+   Header
+================================ */
 
 .header {
     background-color: #111827;
@@ -45,7 +49,9 @@ body {
 }
 
 
-/* Main layout */
+/* ==============================
+   Main layout
+================================ */
 
 .container {
     max-width: 1100px;
@@ -74,7 +80,9 @@ body {
 }
 
 
-/* Cards */
+/* ==============================
+   Cards
+================================ */
 
 .card {
     background-color: white;
@@ -92,7 +100,9 @@ body {
 }
 
 
-/* Form */
+/* ==============================
+   Form
+================================ */
 
 .form-grid {
     display: grid;
@@ -152,7 +162,9 @@ textarea {
 }
 
 
-/* Buttons */
+/* ==============================
+   Primary button
+================================ */
 
 .primary-button {
     background-color: #4f46e5;
@@ -166,7 +178,7 @@ textarea {
     transition: background-color 0.2s;
 }
 
-.primary-button:hover {
+.primary-button:hover:not(:disabled) {
     background-color: #4338ca;
 }
 
@@ -175,8 +187,15 @@ button:disabled {
     cursor: not-allowed;
 }
 
+button:focus-visible {
+    outline: 3px solid #818cf8;
+    outline-offset: 3px;
+}
 
-/* Product table */
+
+/* ==============================
+   Product table
+================================ */
 
 .table-heading {
     display: flex;
@@ -225,6 +244,10 @@ td {
     border-bottom: 1px solid #e2e8f0;
 }
 
+tbody tr {
+    transition: background-color 0.2s;
+}
+
 tbody tr:hover {
     background-color: #f8fafc;
 }
@@ -239,7 +262,9 @@ td:last-child {
 }
 
 
-/* Empty product list */
+/* ==============================
+   Empty product list
+================================ */
 
 tbody td.empty-state {
     text-align: center;
@@ -255,27 +280,54 @@ tbody tr:has(.empty-state):hover {
 }
 
 
-/* Delete button */
+/* ==============================
+   Delete button
+================================ */
 
 .delete-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
     background-color: #fef2f2;
     color: #dc2626;
     border: 1px solid #fecaca;
-    border-radius: 7px;
-    padding: 8px 12px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition:
+        background-color 0.2s,
+        border-color 0.2s,
+        color 0.2s;
 }
 
-.delete-button:hover {
+.delete-button:hover:not(:disabled) {
     background-color: #fee2e2;
+    border-color: #f87171;
+    color: #b91c1c;
+}
+
+.delete-button svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.delete-button:focus-visible {
+    outline: 3px solid #fca5a5;
+    outline-offset: 3px;
+}
+
+.delete-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 
-/* Error message */
+/* ==============================
+   Error message
+================================ */
 
 #error-message {
     background-color: #fef2f2;
@@ -287,8 +339,14 @@ tbody tr:has(.empty-state):hover {
     font-size: 14px;
 }
 
+#error-message[hidden] {
+    display: none;
+}
 
-/* Footer */
+
+/* ==============================
+   Footer
+================================ */
 
 .footer {
     text-align: center;
@@ -298,7 +356,9 @@ tbody tr:has(.empty-state):hover {
 }
 
 
-/* Responsive design */
+/* ==============================
+   Responsive design
+================================ */
 
 @media (max-width: 600px) {
 
@@ -335,6 +395,11 @@ tbody tr:has(.empty-state):hover {
     td {
         padding: 12px;
         white-space: nowrap;
+    }
+
+    .delete-button {
+        width: 34px;
+        height: 34px;
     }
 
 }
