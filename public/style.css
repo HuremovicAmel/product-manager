@@ -13,6 +13,7 @@ body {
     line-height: 1.6;
 }
 
+
 /* Header */
 
 .header {
@@ -43,6 +44,7 @@ body {
     font-size: 14px;
 }
 
+
 /* Main layout */
 
 .container {
@@ -71,6 +73,7 @@ body {
     color: #64748b;
 }
 
+
 /* Cards */
 
 .card {
@@ -87,6 +90,7 @@ body {
     font-weight: 600;
     margin-bottom: 24px;
 }
+
 
 /* Form */
 
@@ -147,6 +151,7 @@ textarea {
     margin-top: 24px;
 }
 
+
 /* Buttons */
 
 .primary-button {
@@ -169,6 +174,7 @@ button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
 
 /* Product table */
 
@@ -232,6 +238,23 @@ td:last-child {
     text-align: right;
 }
 
+
+/* Empty product list */
+
+tbody td.empty-state {
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 40px 20px;
+    white-space: normal;
+}
+
+tbody tr:has(.empty-state):hover {
+    background-color: transparent;
+}
+
+
 /* Delete button */
 
 .delete-button {
@@ -251,6 +274,7 @@ td:last-child {
     background-color: #fee2e2;
 }
 
+
 /* Error message */
 
 #error-message {
@@ -263,6 +287,7 @@ td:last-child {
     font-size: 14px;
 }
 
+
 /* Footer */
 
 .footer {
@@ -272,9 +297,11 @@ td:last-child {
     padding: 15px 20px 30px;
 }
 
+
 /* Responsive design */
 
 @media (max-width: 600px) {
+
     .container {
         margin: 24px auto;
         padding: 0 16px;
@@ -309,4 +336,5 @@ td:last-child {
         padding: 12px;
         white-space: nowrap;
     }
+
 }
