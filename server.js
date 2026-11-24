@@ -8,7 +8,9 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.static("public"));
 
-// Get all products
+
+// GET - Get all products
+
 app.get("/api/products", (req, res) => {
 
     const sql = "SELECT * FROM products";
@@ -25,7 +27,57 @@ app.get("/api/products", (req, res) => {
     });
 });
 
+
+// POST - Create a new product
+
+app.post("/api/products", (req, res) => {
+
+    const { name, price, sku, description } = req.body || {};
+
+    if (
+        typeof name !== "string" ||
+        !name.trim() ||
+        typeof sku !== "string" ||
+        !sku.trim() ||
+        typeof description !== "string" ||
+        !description.trim() ||
+        typeof price !== "number" ||
+        !Number.isFinite(price) ||
+        price <= 0
+    ) {
+        return res.status(400).json({
+            message: "Alla fält måste fyllas i och priset måste vara positivt."
+        });
+    }
+
+    const sql = `
+        INSERT INTO products (name, price, sku, description)
+        VALUES (?, ?, ?, ?)
+    `;
+
+    db.run(sql, [name, price, sku, description], function (error) {
+
+        if (error) {
+            return res.status(500).json({
+                message: "Kunde inte lägga till produkten."
+            });
+        }
+
+        const newProduct = {
+            id: this.lastID,
+            name,
+            price,
+            sku,
+            description
+        };
+
+        res.status(201).json(newProduct);
+    });
+});
+
+
 // Start server
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
