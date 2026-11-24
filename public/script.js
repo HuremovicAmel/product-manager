@@ -5,32 +5,72 @@ const productForm = document.querySelector("#product-form");
 const productList = document.querySelector("#product-list");
 const productCount = document.querySelector("#product-count");
 const errorMessage = document.querySelector("#error-message");
+const successMessage = document.querySelector("#success-message");
 const submitButton = document.querySelector(".primary-button");
 
 let products = [];
+let messageTimeout;
+let isBusy = false;
 
 
 // Show error message
 
 function showError(message) {
+    hideMessages();
+
     errorMessage.textContent = message;
     errorMessage.hidden = false;
 }
 
 
-// Hide error message
+// Show success message
 
-function hideError() {
+function showSuccess(message) {
+    hideMessages();
+
+    successMessage.textContent = message;
+    successMessage.hidden = false;
+
+    messageTimeout = setTimeout(() => {
+        successMessage.hidden = true;
+    }, 4000);
+}
+
+
+// Hide messages
+
+function hideMessages() {
+    clearTimeout(messageTimeout);
+
     errorMessage.textContent = "";
     errorMessage.hidden = true;
+
+    successMessage.textContent = "";
+    successMessage.hidden = true;
+}
+
+
+// Control request state
+
+function setBusy(value) {
+    isBusy = value;
+    submitButton.disabled = value;
+
+    document.querySelectorAll(".delete-button").forEach((button) => {
+        button.disabled = value;
+    });
 }
 
 
 // Fetch products from API
 
 async function fetchProducts() {
+
+    setBusy(true);
+
     try {
-        hideError();
+
+        hideMessages();
 
         const response = await fetch("/api/products");
 
@@ -43,7 +83,13 @@ async function fetchProducts() {
         renderProducts(products);
 
     } catch (error) {
-        showError(error.message);
+
+        showError("Kunde inte hämta produkter. Försök igen.");
+
+    } finally {
+
+        setBusy(false);
+
     }
 }
 
@@ -95,6 +141,7 @@ function renderProducts(products) {
         deleteButton.dataset.id = product.id;
         deleteButton.type = "button";
         deleteButton.title = "Ta bort produkt";
+        deleteButton.disabled = isBusy;
 
         deleteButton.setAttribute(
             "aria-label",
@@ -132,13 +179,50 @@ function renderProducts(products) {
 }
 
 
+// Validate product
+
+function validateProduct(product) {
+
+    if (!product.name || !product.sku || !product.description) {
+        return "Alla fält måste fyllas i.";
+    }
+
+    if (!Number.isFinite(product.price) || product.price <= 0) {
+        return "Priset måste vara ett positivt nummer.";
+    }
+
+    return null;
+}
+
+
+// Read API error
+
+async function getApiError(response, fallbackMessage) {
+
+    try {
+        const data = await response.json();
+
+        return data.message || fallbackMessage;
+
+    } catch (error) {
+
+        return fallbackMessage;
+
+    }
+}
+
+
 // Add a new product
 
 productForm.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
-    hideError();
+    if (isBusy) {
+        return;
+    }
+
+    hideMessages();
 
     const newProduct = {
         name: document.querySelector("#name").value.trim(),
@@ -147,7 +231,15 @@ productForm.addEventListener("submit", async (event) => {
         description: document.querySelector("#description").value.trim()
     };
 
-    submitButton.disabled = true;
+    const validationError = validateProduct(newProduct);
+
+    if (validationError) {
+        showError(validationError);
+        return;
+    }
+
+    setBusy(true);
+
     submitButton.textContent = "Sparar...";
 
     try {
@@ -164,11 +256,13 @@ productForm.addEventListener("submit", async (event) => {
 
         if (response.status !== 201) {
 
-            const errorData = await response.json();
-
-            throw new Error(
-                errorData.message || "Kunde inte lägga till produkten."
+            const message = await getApiError(
+                response,
+                "Kunde inte lägga till produkten."
             );
+
+            showError(message);
+            return;
         }
 
         const createdProduct = await response.json();
@@ -179,13 +273,16 @@ productForm.addEventListener("submit", async (event) => {
 
         productForm.reset();
 
+        showSuccess("Produkten har lagts till!");
+
     } catch (error) {
 
-        showError(error.message);
+        showError("Kunde inte lägga till produkten. Försök igen.");
 
     } finally {
 
-        submitButton.disabled = false;
+        setBusy(false);
+
         submitButton.textContent = "+ Lägg till produkt";
 
     }
@@ -198,7 +295,7 @@ productList.addEventListener("click", async (event) => {
 
     const deleteButton = event.target.closest(".delete-button");
 
-    if (!deleteButton || deleteButton.disabled) {
+    if (!deleteButton || isBusy || deleteButton.disabled) {
         return;
     }
 
@@ -212,11 +309,7 @@ productList.addEventListener("click", async (event) => {
         return;
     }
 
-    deleteButton.disabled = true;
-
     await deleteProduct(id);
-
-    deleteButton.disabled = false;
 });
 
 
@@ -224,9 +317,11 @@ productList.addEventListener("click", async (event) => {
 
 async function deleteProduct(id) {
 
-    try {
+    hideMessages();
 
-        hideError();
+    setBusy(true);
+
+    try {
 
         const response = await fetch(`/api/products/${id}`, {
             method: "DELETE"
@@ -234,20 +329,28 @@ async function deleteProduct(id) {
 
         if (response.status !== 204) {
 
-            const errorData = await response.json();
-
-            throw new Error(
-                errorData.message || "Kunde inte ta bort produkten."
+            const message = await getApiError(
+                response,
+                "Kunde inte ta bort produkten."
             );
+
+            showError(message);
+            return;
         }
 
         products = products.filter((product) => product.id !== id);
 
         renderProducts(products);
 
+        showSuccess("Produkten har tagits bort!");
+
     } catch (error) {
 
-        showError(error.message);
+        showError("Kunde inte ta bort produkten. Försök igen.");
+
+    } finally {
+
+        setBusy(false);
 
     }
 }

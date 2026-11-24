@@ -326,20 +326,33 @@ tbody tr:has(.empty-state):hover {
 
 
 /* ==============================
-   Error message
+   Status messages
 ================================ */
+
+#error-message,
+#success-message {
+    border: 1px solid;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    font-weight: 500;
+}
 
 #error-message {
     background-color: #fef2f2;
     color: #b91c1c;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-top: 20px;
-    font-size: 14px;
+    border-color: #fecaca;
 }
 
-#error-message[hidden] {
+#success-message {
+    background-color: #f0fdf4;
+    color: #15803d;
+    border-color: #bbf7d0;
+}
+
+#error-message[hidden],
+#success-message[hidden] {
     display: none;
 }
 
